@@ -1,0 +1,5 @@
+%form{role: 'form', method: 'post', action: '/search'}
+  %label{for: 'query'} Query:
+  %input#query{type: 'text', name: 'query', value: @search_query}
+  %br
+  %input{type: 'submit', value: 'Search'}

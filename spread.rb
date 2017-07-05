@@ -1,53 +1,36 @@
+require 'geocoder'
 require 'twitter'
 require 'yaml'
-require 'pry'
-require 'net-http-spy'
-require 'logger'
+require 'json'
+require 'sinatra'
+require 'haml'
 
-logger = Logger.new 'requests.log'
-Net::HTTP.http_logger = logger
-client = YAML.load_file 'client2.yml'
-SEARCH_QUERY = "#Petya OR #petya OR Petya OR petya geocode:52,21,1000km -filter:retweets"
-tweets = client.search(SEARCH_QUERY)
-tweets_ary = tweets.each.to_a
-ITERATION_COUNT = 15
+set :client, YAML.load_file('client.yml')
+set :config, YAML.load_file('config.yml')
+Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'], timeout: 2)
 
-logger.debug "Starting threads."
-begin
-thr1 = Thread.new do
-  newer_tweets = tweets
-  newer_tweets_ary = []
-  Thread.current[:count] = 0
-  ITERATION_COUNT.times do |i|
-    logger.debug 'iteration %d' % i
-    newer_tweets = client.search(SEARCH_QUERY, {since_id: newer_tweets.max_by(&:id)})
-    ary = newer_tweets.each.to_a
-    newer_tweets_ary += ary
-    Thread.current[:count] += ary.count
-    break unless ary.count > 0
+get '/' do
+  @search_query = settings.config['default_search_query']
+  haml :index, :layout => :default
+end
+
+post '/search' do
+  tweets = settings.client.search(params['query']).each
+  @tweets_json = []
+  tweets.each do |tweet|
+    if tweet.geo?
+      coords = tweet.geo.coords
+      @tweets_json.push({'lat' => coords[0], 'lng' => coords[1]})
+    else
+      if tweet.user.location?
+        location = Geocoder.search(tweet.user.location).first
+        unless location.nil?
+          coords = location.coordinates
+          @tweets_json.push({'lat' => coords[0], 'lng' => coords[1]})
+        end
+      end
+    end
   end
-  newer_tweets_ary
+  @tweets_json = JSON.dump @tweets_json
+  haml :search, :layout => :default
 end
-
-thr2 = Thread.new do
-  older_tweets = tweets
-  older_tweets_ary = []
-  Thread.current[:count] = 0
-  ITERATION_COUNT.times do |i|
-    logger.debug 'iteration %d' % i
-    older_tweets = client.search(SEARCH_QUERY, {since_id: older_tweets.min_by(&:id)})
-    ary = older_tweets.each.to_a
-    older_tweets_ary += ary
-    Thread.current[:count] += ary.count
-    break unless ary.count > 0
-  end
-  older_tweets_ary
-end
-all_tweets = thr1.value + thr2.value
-tweets_with_geo = all_tweets.select(&:geo?)
-tweets_with_user_location = all_tweets.select {|tweet| tweet.user.location?}
-rescue Twitter::Error::TooManyRequests
-  logger.debug thr1[:count]
-  logger.debug thr2[:count]
-end
-pry

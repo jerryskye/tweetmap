@@ -1,0 +1,31 @@
+:css
+  html, body, #map, #container {
+    height: 100%;
+    width: 100%;
+  }
+:javascript
+  function initMap() {
+    var fbc = {lat: 52.233002, lng: 21.038452};
+
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 3,
+      center: fbc
+    });
+
+    var locations = #{@tweets_json};
+
+    var markers = locations.map(function(loc, i) {
+      return new google.maps.Marker({
+        position: loc,
+      });
+    });
+
+    var markerCluster = new MarkerClusterer(map, markers,
+      {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+  };
+
+%script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+%script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAiBgWeOolCghhmdpvsHUMUwF7EmeVJ9Kg&callback=initMap")
+
+#container
+  #map
