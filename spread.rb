@@ -5,10 +5,19 @@ require 'json'
 require 'sinatra'
 require 'haml'
 
-#set :bind, '0.0.0.0'
 set :client, YAML.load_file('client.yml')
 set :config, YAML.load_file('config.yml')
 Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'])
+
+helpers do
+  def url asset
+    settings.config['host'] + settings.config['base_url'] + asset
+  end
+
+  def action_url action
+    settings.config['base_url'] + action
+  end
+end
 
 get '/' do
   @search_query = settings.config['default_search_query']

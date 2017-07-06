@@ -8,47 +8,12 @@
         width: 100%;
       }
 
-    :javascript
-      function initMap(tweets) {
-        var fbc = {lat: 52.233002, lng: 21.038452};
-
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 2,
-          center: fbc
-        });
-
-        var markers = tweets.map(function(loc, i) {
-          return new google.maps.Marker({
-            position: loc,
-          });
-        });
-
-        var markerCluster = new MarkerClusterer(map, markers,
-          {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-      };
-
-      function getTweets(event) {
-        event.preventDefault();
-        var req = new XMLHttpRequest();
-        req.open("GET", '/search.json?query=' + encodeURIComponent(document.getElementById('query').value, true));
-        req.onreadystatechange = function() {
-          if(this.readyState == XMLHttpRequest.DONE) {
-            if(this.status == 200) {
-              initMap(JSON.parse(this.responseText));
-            }
-            else {
-              document.getElementById("container").innerHTML = this.responseText;
-            }
-          }
-        }
-        req.send();
-      };
-
   %body{onload: 'document.getElementById("form").addEventListener("submit", getTweets)'}
+    %script{type: 'text/javascript', src: url('/map.js')}
     %script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
     %script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAiBgWeOolCghhmdpvsHUMUwF7EmeVJ9Kg")
 
-    %form{id: 'form', role: 'form', method: 'get', action: '/search.json'}
+    %form{id: 'form', role: 'form', method: 'get', action: action_url('/search.json')}
       %label{for: 'query'} Query:
       %input#query{type: 'text', name: 'query', value: @search_query, autofocus: 'true'}
       %br
