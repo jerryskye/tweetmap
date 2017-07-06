@@ -5,6 +5,7 @@ require 'json'
 require 'sinatra'
 require 'haml'
 
+#set :bind, '0.0.0.0'
 set :client, YAML.load_file('client.yml')
 set :config, YAML.load_file('config.yml')
 Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'])
