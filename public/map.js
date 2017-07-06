@@ -13,6 +13,7 @@ function getTweets(event) {
     }
   }
   req.send();
+  document.getElementById("map").innerText = "Map is loading...";
 };
 
 function initMap(tweets) {

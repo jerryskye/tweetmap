@@ -13,4 +13,4 @@ COPY views $APP_HOME/views
 COPY public $APP_HOME/public
 RUN bundle install
 
-CMD ["thin", "start"]
+CMD ["puma", "config.ru"]

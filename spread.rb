@@ -10,7 +10,7 @@ set :config, YAML.load_file('config.yml')
 Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'])
 
 helpers do
-  def url asset
+  def asset_url asset
     settings.config['host'] + settings.config['base_url'] + asset
   end
 

@@ -9,7 +9,7 @@
       }
 
   %body{onload: 'document.getElementById("form").addEventListener("submit", getTweets)'}
-    %script{type: 'text/javascript', src: url('/map.js')}
+    %script{type: 'text/javascript', src: asset_url('/map.js')}
     %script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
     %script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAiBgWeOolCghhmdpvsHUMUwF7EmeVJ9Kg")
 
