@@ -11,11 +11,20 @@
   %body{onload: 'document.getElementById("form").addEventListener("submit", getTweets)'}
     %script{type: 'text/javascript', src: asset_url('/map.js')}
     %script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
-    %script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAiBgWeOolCghhmdpvsHUMUwF7EmeVJ9Kg")
+    %script(async defer src="https://maps.googleapis.com/maps/api/js?key=#{settings.config['google_api_key']}")
 
     %form{id: 'form', role: 'form', method: 'get', action: action_url('/search.json')}
-      %label{for: 'query'} Query:
-      %input#query{type: 'text', name: 'query', value: @search_query, autofocus: 'true'}
+      %label{for: 'tags'} Keywords:
+      %input#tags{type: 'text', name: 'tags', autofocus: 'true', required: 'true'}
+      %br
+      %label{for: 'since'} Since:
+      %input#since{type: 'text', name: 'since'}
+      %br
+      %label{for: 'until'} Until:
+      %input#until{type: 'text', name: 'until'}
+      %br
+      %label{for: 'rts'} Include retweets?
+      %input#rts{type: 'checkbox', name: 'rts'}
       %br
       %input{type: 'submit', value: 'Search'}
 

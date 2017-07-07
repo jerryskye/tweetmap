@@ -1,7 +1,27 @@
+function buildQuery(form) {
+  var query = '';
+  var queryKeywords = {
+    'tags': '',
+    'since': 'since:',
+    'until': 'until:'
+  };
+  var inputs = form.getElementsByTagName('input');
+  for(var i = 0; i < inputs.length; i++) {
+    var input = inputs[i]
+    if(inputs[i].type == 'text' && input.value.length > 0)
+      query += queryKeywords[input.id] + input.value + ' ';
+    else
+      if(inputs[i].type == 'checkbox' && !inputs[i].checked)
+        query += '-filter:retweets';
+  }
+  return encodeURIComponent(query);
+};
+
 function getTweets(event) {
   event.preventDefault();
+  var form = event.target;
   var req = new XMLHttpRequest();
-  req.open("GET", event.target.action + "?query=" + encodeURIComponent(document.getElementById('query').value, true));
+  req.open("GET", form.action + "?query=" + buildQuery(form), true);
   req.onreadystatechange = function() {
     if(this.readyState == XMLHttpRequest.DONE) {
       if(this.status == 200) {

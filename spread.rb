@@ -7,7 +7,7 @@ require 'haml'
 
 set :client, YAML.load_file('client.yml')
 set :config, YAML.load_file('config.yml')
-Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'])
+Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'], use_https: true, timeout: 1)
 
 helpers do
   def asset_url asset
@@ -20,7 +20,6 @@ helpers do
 end
 
 get '/' do
-  @search_query = settings.config['default_search_query']
   haml :index
 end
 
