@@ -1,0 +1,3 @@
+--- !ruby/object:Twitter::REST::Client
+consumer_key:
+consumer_secret:

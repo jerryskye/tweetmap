@@ -12,5 +12,3 @@ COPY spread.rb $APP_HOME/
 COPY views $APP_HOME/views
 COPY public $APP_HOME/public
 RUN bundle install
-
-CMD ["puma", "config.ru"]

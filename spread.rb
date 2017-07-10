@@ -1,3 +1,4 @@
+require 'redis'
 require 'geocoder'
 require 'twitter'
 require 'yaml'
@@ -7,7 +8,8 @@ require 'haml'
 
 set :client, YAML.load_file('client.yml')
 set :config, YAML.load_file('config.yml')
-Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'], use_https: true, timeout: 1)
+set :redis, Redis.new(host: 'redis')
+Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'], use_https: true, timeout: 2)
 
 helpers do
   def asset_url asset
@@ -30,13 +32,20 @@ get '/search.json' do
   tweets.each do |tweet|
     if tweet.geo?
       coords = tweet.geo.coords
-      @tweets.push({'lat' => coords[0], 'lng' => coords[1]})
+      @tweets.push({'text' => tweet.text, 'created_at' => tweet.created_at, 'lat' => coords[0], 'lng' => coords[1]})
     else
       if tweet.user.location?
-        location = Geocoder.search(tweet.user.location).first
-        unless location.nil?
-          coords = location.coordinates
-          @tweets.push({'lat' => coords[0], 'lng' => coords[1]})
+        coords_ary = settings.redis.get(tweet.user.location.downcase.strip)
+        if coords_ary.nil?
+          result = Geocoder.search(tweet.user.location).first
+          unless result.nil?
+            coords = result.coordinates
+            settings.redis.set(tweet.user.location.downcase.strip, JSON.dump(coords))
+            @tweets.push({'text' => tweet.text, 'created_at' => tweet.created_at, 'lat' => coords[0], 'lng' => coords[1]})
+          end
+        else
+          coords = JSON.parse(coords_ary)
+          @tweets.push({'text' => tweet.text, 'created_at' => tweet.created_at, 'lat' => coords[0], 'lng' => coords[1]})
         end
       end
     end

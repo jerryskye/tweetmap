@@ -1,0 +1,16 @@
+version: "3"
+services:
+  web:
+    build: .
+    command: bundle exec puma config.ru
+    ports:
+      #- "127.0.0.1:8080:9292"
+      - "80:9292"
+  redis:
+    image: redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+volumes:
+  redis-data:
+    #driver: local
