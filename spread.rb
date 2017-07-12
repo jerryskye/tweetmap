@@ -9,7 +9,7 @@ require 'haml'
 set :client, YAML.load_file('client.yml')
 set :config, YAML.load_file('config.yml')
 set :redis, Redis.new(host: 'redis')
-Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'], use_https: true, timeout: 2)
+Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'], use_https: true, timeout: settings.config['geocoder_timeout'])
 
 helpers do
   def asset_url asset
@@ -41,11 +41,11 @@ get '/search.json' do
           unless result.nil?
             coords = result.coordinates
             settings.redis.set(tweet.user.location.downcase.strip, JSON.dump(coords))
-            @tweets.push({'text' => tweet.text, 'created_at' => tweet.created_at, 'lat' => coords[0], 'lng' => coords[1]})
+            @tweets.push({'text' => tweet.text, 'created_at' => tweet.created_at, 'lat' => coords[0], 'lng' => coords[1], 'address' => tweet.user.location})
           end
         else
           coords = JSON.parse(coords_ary)
-          @tweets.push({'text' => tweet.text, 'created_at' => tweet.created_at, 'lat' => coords[0], 'lng' => coords[1]})
+          @tweets.push({'text' => tweet.text, 'created_at' => tweet.created_at, 'lat' => coords[0], 'lng' => coords[1], 'address' => tweet.user.location})
         end
       end
     end
