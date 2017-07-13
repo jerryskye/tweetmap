@@ -20,19 +20,6 @@ function buildQuery() {
 function getTweets(event) {
   event.preventDefault();
   var form = event.target;
-  //var req = new XMLHttpRequest();
-  //req.open("GET", form.action + "?query=" + buildQuery(form), true);
-  //req.onreadystatechange = function() {
-  //  if(this.readyState == XMLHttpRequest.DONE) {
-  //    if(this.status == 200) {
-  //      initMap(JSON.parse(this.responseText));
-  //    }
-  //    else {
-  //      document.getElementById("container").innerHTML = this.responseText;
-  //    }
-  //  }
-  //}
-  //req.send();
   $.ajax({url: form.action,
     data: {
       query: buildQuery()
@@ -59,7 +46,7 @@ function initMap(tweets) {
   });
 
   var markers = tweets.map(function(tweet, i) {
-    marker = new google.maps.Marker({
+    var marker = new google.maps.Marker({
       position: tweet,
       map: map
     });

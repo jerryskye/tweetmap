@@ -9,7 +9,7 @@ require 'haml'
 set :client, YAML.load_file('client.yml')
 set :config, YAML.load_file('config.yml')
 set :redis, Redis.new(host: 'redis')
-Geocoder.configure(lookup: :google, api_key: settings.config['google_api_key'], use_https: true, timeout: settings.config['geocoder_timeout'])
+Geocoder.configure(lookup: :esri, use_https: true, timeout: settings.config['geocoder_timeout'])
 
 helpers do
   def asset_url asset
