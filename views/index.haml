@@ -16,9 +16,9 @@
         width: 100%;
       }
 
-  %body{onload: 'document.getElementById("form").addEventListener("submit", getTweets)'}
+  %body{onload: '$("#form").submit(getTweets);'}
     .container
-      .col-lg-6
+      .col-md-4
         %form{id: 'form', role: 'form', method: 'get', action: action_url('/search.json')}
           %label{for: 'tags'} Keywords:
           %input#tags{type: 'text', name: 'tags', autofocus: 'true', required: 'true'}
@@ -33,7 +33,10 @@
           %input#rts{type: 'checkbox', name: 'rts'}
           %br
           %input{type: 'submit', value: 'Search'}
-      #tweetinfo.col-lg-6
+      #tweetinfo.col-md-4
+      .col-md-4
+        %p#date.text-center
+        #slider
 
     #container.container
       #map
