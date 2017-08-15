@@ -11,6 +11,7 @@ function getDaysBetween(startDate, stopDate) {
     dateArray.push( new Date (currentDate) )
     currentDate = currentDate.addDays(1);
   }
+  dateArray.push(stopDate);
   return dateArray;
 };
 
